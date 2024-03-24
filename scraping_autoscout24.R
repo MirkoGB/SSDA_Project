@@ -343,10 +343,83 @@ cars <- cars %>%
 cars$cambio_cinghia_distribuzione = cars$disponibilita = NULL
 cars$colore_specifico = NULL
 
-# cars$paese <- gsub(", IT", "", cars$paese)
+
+# 6) Nomi dei paesi ------
+
+find.region <- function(citta){
+  citta <- gsub(".*\\b(cassina|binasco|seregno|corsico|gallarate|milano|giovanni|cinisello|capriolo|gerola|bulgarograsso|naviglio|lecco|pavia|brescia|lodi|lomellina|monza|bergamo|castiglione|como|cremona|mantova|sondrio|varese|BG|BS|CO|CR|LC|LO|MN|MI|MB|PV|SO|VA)\\b.*", 
+                "Lombardia", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(ponzano|thiene|treviso|belluno|padova|vicenza|veneto|limena|verona|venezia|monselice|rovigo|TV|BL|PD|VI|VE|VR|RO)\\b.*", 
+                "Veneto", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(verolengo|saluzzo|alessandria|marengo|collegno|torinese|asti|biella|cuneo|novara|torino|vercelli|AL|AT|BI|CN|NO|TO|VB|VC)\\b.*", 
+                "Piemonte", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(frosinone|latina|rieti|roma|viterbo|ciampino|FR|LT|RI|RM|VT|ROMA)\\b.*", 
+                "Lazio", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(bologna|panaro|ferrara|forlì|forli|forli-cesena|cesena|modena|parma|piacenza|ravenna|emilia|rimini|BO|FE|FC|MO|PR|PC|RA|RE|RN)\\b.*", 
+                "Emilia-Romagna", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(firenze|prato|lucca|carrara|fiorentino|grosseto|livorno|pisa|pistoia|siena|arezzo|AR|FI|GR|LI|LU|MS|PI|PT|PO|SI)\\b.*", 
+                "Toscana", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(trento|bolzano|TN|BZ)\\b.*", 
+                "Trentino-AA", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(terni|perugia|PG|TR)\\b.*", 
+                "Umbria", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(genova|imperia|spezia|savona|GE|IM|SP|SV)\\b.*", 
+                "Liguria", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(gorizia|pordenone|trieste|udine|GO|PN|TS|UD)\\b.*", 
+                "Friuli-VG", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(avellino|benevento|caserta|napoli|salerno|AV|BN|CE|NA|SA)\\b.*", 
+                "Campania", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(catanzaro|CZ|cosenza|CS|crotone|KR|calabria|RC|valentia|VV)\\b.*", 
+                "Calabria", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(bari|barletta|trani|BA|BT|brindisi|foggia|BR|FG|lecce|LE|taranto|TA)\\b.*", 
+                "Puglia", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(ancona|ascoli|fermo|macerata|pesaro|AN|AP|FM|MC|PU)\\b.*", 
+                "Marche", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(aosta|AO)\\b.*", 
+                "Valle d'Aosta", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(palermo|PA)\\b.*", 
+                "Sicilia", citta, ignore.case = TRUE)
+  return(citta)
+}
+cars$paese = find.region(cars$paese)
+names(cars)[names(cars) == 'paese'] <- 'regione'
+# Ora il dataframe contiene la regione e non il paese del rivenditore
+# o della concessionaria.
 
 
-# 6) Da stringa con optional a variabili indicatrici (DA FARE) ------
+# 7) Neopatentati e potenza ------
+
+kW <- sub("\\s*kW.*", "", cars$potenza)
+cars$kW = kW
+cars <- cars %>%
+  dplyr::relocate(kW, .before = potenza)
+# Indicazione sui kW.
+
+cv <- gsub(".*?\\((.*?)\\).*", "\\1", cars$potenza)
+cars$cv <- substr(cv, start = 1, stop = nchar(cv) - 3)
+cars <- cars %>%
+  dplyr::relocate(cv, .after = kW)
+# Indicazione sui cavalli del motore.
+
+cars$potenza = NULL
+# Non serve più.
+
+# Il limite per i neopatentati è 55 kW.
+
+cars$per_neopatentati = ifelse(cars$kW <= 55, "Si", "No")
+# In questo modo la variabile risulta essere definita
+# con certezza sulla base dei kW e si imputano molti NA.
+
+
+# 8) Peso ------
+
+peso <- substr(cars$peso_a_vuoto, start = 1,
+               stop = nchar(cars$peso_a_vuoto) - 3)
+cars$peso_a_vuoto = peso
+# Pulizia del peso a vuoto.
+
+
+# 9) Da stringa con optional a variabili indicatrici ------
 
 optional <- unique(unlist(strsplit(as.character(cars$optional), "\\*")))
 # Lista con optional, intanto si cancellano quelli lunghissimi
