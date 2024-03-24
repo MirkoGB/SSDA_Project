@@ -411,12 +411,47 @@ cars$per_neopatentati = ifelse(cars$kW <= 55, "Si", "No")
 # con certezza sulla base dei kW e si imputano molti NA.
 
 
-# 8) Peso ------
+# 8) Peso e carrozzeria ------
 
 peso <- substr(cars$peso_a_vuoto, start = 1,
                stop = nchar(cars$peso_a_vuoto) - 3)
 cars$peso_a_vuoto = peso
 # Pulizia del peso a vuoto.
+
+table(cars$carrozzeria, cars$modello)
+# Ad alcuni modelli sono state assegnate più tipologie
+# diverse di carrozzeria. Ad esempio, la 500X viene 
+# considerata sia come SUV, sia come station wagon.
+# Bisogna dunque uniformare il dataset in modo che ad
+# ogni modello corrisponda un unico tipo di carrozzeria.
+
+cars$carrozzeria.new = NA
+cars$carrozzeria.new = factor(cars$carrozzeria.new,
+                              levels = c("Berlina", "City Car", "SUV"))
+cars = cars %>% 
+  mutate(carrozzeria.new = case_when(
+    modello %in% c("A1", "A3", "C3", "Clio", "Countryman",
+                   "Fiesta", "Focus", "Golf", 
+                   "Tipo", "Yaris") ~ 'Berlina',
+    modello %in% c("Aygo-X", "500", "Corsa", "i10",
+                   "Ignis", "208", "Panda", "Picanto",
+                   "Polo", "Sandero", "Ypsilon") ~ 'City Car',
+    modello %in% c("Austral", "Avenger", "C3 Aircross",
+                   "Captur", "500x", "Compass", "Duster",
+                   "Formentor", "GLA", "Juke", "Kuga",
+                   "Mokka", "2008", "3008", "Puma",
+                   "Q3", "Qashqai", "Renegade", 
+                   "Sportage", "Taigo", "T-Cross",
+                   "Tiguan", "Tonale", "T-Roc",
+                   "Tucson", "Vitara", "X1", 
+                   "Yaris Cross", "ZS") ~ 'SUV'
+  ))
+cars <- cars %>%
+  dplyr::relocate(carrozzeria.new, .before = carrozzeria)
+cars$carrozzeria = NULL
+names(cars)[names(cars) == 'carrozzeria.new'] <- 'carrozzeria'
+# Ora ogni auto ha il corretto tipo di carrozzeria 
+# associato.
 
 
 # 9) Da stringa con optional a variabili indicatrici ------
