@@ -204,6 +204,7 @@ write.csv(cars, "macchine_scraping.csv", row.names = F)
 
 # ------ PULIZIA DEL DATASET ------
 
+library(tidyverse)
 cars <- read.csv(file.choose())
 colnames(cars)
 # Dataset "macchine_scraping.csv".
@@ -224,56 +225,56 @@ cars$versione_per_nazione = NULL
 
 # 2) Trasformazione nomi dei modelli -------
 
-panda <- grep("Fiat", cars$marca)[1:19] #ok
-sandero <- grep("Dacia", cars$marca)[1:19] #ok
-ypsilon <- grep("Lancia", cars$marca) #ok
-yaris <- grep("Toyota", cars$marca)[1:19] #ok
-cinquecento <- grep("Fiat", cars$marca)[20:38] #ok
+panda <- grep("Fiat", cars$marca)[1:19] 
+sandero <- grep("Dacia", cars$marca)[1:19] 
+ypsilon <- grep("Lancia", cars$marca) 
+yaris <- grep("Toyota", cars$marca)[1:19] 
+cinquecento <- grep("Fiat", cars$marca)[20:38] 
 troc <- grep("Volkswagen", cars$marca)[1:18]
 captur <- grep("Renault", cars$marca)[1:19]
 c3 <- grep("Citroen", cars$marca)[1:19]
 puma <- grep("Ford", cars$marca)[1:19]
 duster <- grep("Dacia", cars$marca)[20:38]
 renegade <- grep("Jeep", cars$marca)[1:19]
-cinquecentox <- grep("Fiat", cars$marca)[39:57] #ok
+cinquecentox <- grep("Fiat", cars$marca)[39:57] 
 clio <- grep("Renault", cars$marca)[20:38]
 p208 <- grep("Peugeot", cars$marca)[1:18]
 p2008 <- grep("Peugeot", cars$marca)[19:37]
-yariscross <- grep("Toyota", cars$marca)[20:36] #ok
-corsa <- grep("Opel", cars$marca)[1:18] #ok
-avenger <- grep("Jeep", cars$marca)[20:38] #ok
-compass <- grep("Jeep", cars$marca)[39:57] #ok
-tcross <- grep("Volkswagen", cars$marca)[19:56] #ok
-qashqai <- grep("Nissan", cars$marca)[1:19] #ok
-zs <- grep("MG", cars$marca) #ok
-sportage <- grep("Kia", cars$marca)[1:17] #ok
-p3008 <- grep("Peugeot", cars$marca)[38:56] #ok
-tonale <- grep("Alfa Romeo", cars$marca) #ok
-polo <- grep("Volkswagen", cars$marca)[57:75] #ok
-kuga <- grep("Ford", cars$marca)[20:38] #ok
-tiguan <- grep("Volkswagen", cars$marca)[76:93] #ok
-focus <- grep("Ford", cars$marca)[39:57] #ok
-aygox <- grep("Toyota", cars$marca)[37:55] #ok
-q3 <- grep("Audi", cars$marca)[1:14] #ok
-x1 <- grep("BMW", cars$marca) #ok
-i10 <- grep("Hyundai", cars$marca)[1:19] #ok
-tucson <- grep("Hyundai", cars$marca)[20:38] #ok
-c3aircross <- grep("Citroen", cars$marca)[20:36] #ok
-formentor <- grep("CUPRA", cars$marca) #ok
-gla <- grep("Mercedes", cars$marca) #ok
-fiesta <- grep("Ford", cars$marca)[58:76] #ok
-picanto <- grep("Kia", cars$marca)[18:36] #ok
-juke <- grep("Nissan", cars$marca)[20:36] #ok
-a3 <- grep("Audi", cars$marca)[15:33] #ok
-mokka <- grep("Opel", cars$marca)[19:37] #ok
-ignis <- grep("Suzuki", cars$marca)[1:18] #ok
-tipo <- grep("Fiat", cars$marca)[58:76] #ok
-golf <- grep("Volkswagen", cars$marca)[94:111] #ok
-austral <- grep("Renault", cars$marca)[39:43] #ok
-a1 <- grep("Audi", cars$marca)[34:51] #ok
-countryman <- grep("MINI", cars$marca) #ok
-taigo <- grep("Volkswagen", cars$marca)[112:129]# ok
-vitara <- grep("Suzuki", cars$marca)[19:37] #ok
+yariscross <- grep("Toyota", cars$marca)[20:36] 
+corsa <- grep("Opel", cars$marca)[1:18] 
+avenger <- grep("Jeep", cars$marca)[20:38] 
+compass <- grep("Jeep", cars$marca)[39:57] 
+tcross <- grep("Volkswagen", cars$marca)[19:56] 
+qashqai <- grep("Nissan", cars$marca)[1:19] 
+zs <- grep("MG", cars$marca) 
+sportage <- grep("Kia", cars$marca)[1:17] 
+p3008 <- grep("Peugeot", cars$marca)[38:56] 
+tonale <- grep("Alfa Romeo", cars$marca) 
+polo <- grep("Volkswagen", cars$marca)[57:75] 
+kuga <- grep("Ford", cars$marca)[20:38] 
+tiguan <- grep("Volkswagen", cars$marca)[76:93] 
+focus <- grep("Ford", cars$marca)[39:57] 
+aygox <- grep("Toyota", cars$marca)[37:55] 
+q3 <- grep("Audi", cars$marca)[1:14] 
+x1 <- grep("BMW", cars$marca) 
+i10 <- grep("Hyundai", cars$marca)[1:19] 
+tucson <- grep("Hyundai", cars$marca)[20:38] 
+c3aircross <- grep("Citroen", cars$marca)[20:36] 
+formentor <- grep("CUPRA", cars$marca) 
+gla <- grep("Mercedes", cars$marca) 
+fiesta <- grep("Ford", cars$marca)[58:76] 
+picanto <- grep("Kia", cars$marca)[18:36] 
+juke <- grep("Nissan", cars$marca)[20:36] 
+a3 <- grep("Audi", cars$marca)[15:33] 
+mokka <- grep("Opel", cars$marca)[19:37] 
+ignis <- grep("Suzuki", cars$marca)[1:18] 
+tipo <- grep("Fiat", cars$marca)[58:76] 
+golf <- grep("Volkswagen", cars$marca)[94:111] 
+austral <- grep("Renault", cars$marca)[39:43] 
+a1 <- grep("Audi", cars$marca)[34:51] 
+countryman <- grep("MINI", cars$marca) 
+taigo <- grep("Volkswagen", cars$marca)[112:129]
+vitara <- grep("Suzuki", cars$marca)[19:37] 
 # Vettori di indici.
 
 indici <- list(a1, a3, austral, avenger, aygox, c3, c3aircross,
@@ -341,7 +342,8 @@ cars <- cars %>%
 # 5) Variabili inutili ------
 
 cars$cambio_cinghia_distribuzione = cars$disponibilita = NULL
-cars$colore_specifico = NULL
+cars$colore_specifico = cars$revisione = NULL
+cars$ultimo_tagliando = NULL
 
 
 # 6) Nomi dei paesi ------
@@ -437,7 +439,7 @@ cars = cars %>%
                    "Ignis", "208", "Panda", "Picanto",
                    "Polo", "Sandero", "Ypsilon") ~ 'City Car',
     modello %in% c("Austral", "Avenger", "C3 Aircross",
-                   "Captur", "500x", "Compass", "Duster",
+                   "Captur", "500X", "Compass", "Duster",
                    "Formentor", "GLA", "Juke", "Kuga",
                    "Mokka", "2008", "3008", "Puma",
                    "Q3", "Qashqai", "Renegade", 
@@ -454,64 +456,234 @@ names(cars)[names(cars) == 'carrozzeria.new'] <- 'carrozzeria'
 # associato.
 
 
-# 9) Da stringa con optional a variabili indicatrici ------
+# 9) Modifica delle variabili rimanenti
 
-optional <- unique(unlist(strsplit(as.character(cars$optional), "\\*")))
+table(cars$tagliandi_certificati)
+cars$tagliandi_certificati[is.na(cars$tagliandi_certificati)] = "No"
+cars$tagliandi_certificati[cars$tagliandi_certificati == "Sì"] = "Si"
+# Tagliandi certificati.
+
+table(cars$tipo_di_veicolo)
+cars$tipo_di_veicolo[cars$tipo_di_veicolo %in% c("Aziendale", "Dimostrativo", "KM0")] = "Nuovo"
+# Tipo di veicolo.
+
+cars$altre_fonti_energetiche[is.na(cars$altre_fonti_energetiche)] = "No"
+cars$altre_fonti_energetiche[cars$altre_fonti_energetiche == "Corrente elettrica "] = "Si"
+names(cars)[names(cars) == 'altre_fonti_energetiche'] <- 'ibrida'
+# Veicolo ibrido o no.
+
+table(cars$tipo_di_cambio)
+cars$tipo_di_cambio[cars$tipo_di_cambio == "Semiautomatico"] = "Automatico"
+names(cars)[names(cars) == 'tipo_di_cambio'] <- 'cambio'
+# Cambio.
+
+table(cars$veicolo_non_fumatori)
+cars$veicolo_non_fumatori[is.na(cars$veicolo_non_fumatori)] = "Non dichiarato"
+cars$veicolo_non_fumatori[cars$veicolo_non_fumatori == "Sì"] = "Si"
+# Veicolo non fumatori.
+
+table(cars$usato_garantito)
+cars = cars %>% 
+  mutate(usato_garantito = case_when(
+    usato_garantito %in% c("0 mesi") ~ 'No',
+    usato_garantito %in% c("6 mesi", "12 mesi", "Sì") ~ '6-12 mesi',
+    usato_garantito %in% c("14 mesi", "17 mesi", "18 mesi", "19 mesi",
+                           "20 mesi", "22 mesi", "23 mesi") ~ '13-23 mesi',
+    usato_garantito %in% c("24 mesi", "36 mesi") ~ '24-36 mesi',
+    usato_garantito %in% c("48 mesi", "60 mesi", "72 mesi", "74 mesi",
+                           "84 mesi") ~ 'Oltre 36 mesi'
+  ))
+cars$usato_garantito[is.na(cars$usato_garantito)] = "No"
+# Per convenzione si assume che la categoria "sì" vada a finire
+# nei 12 mesi.
+
+table(cars$colore_finiture_interne)
+cars = cars %>% 
+  mutate(colore_finiture_interne = case_when(
+    colore_finiture_interne %in% c("Altro", "Arancione", "Beige",
+                                   "Bianco", "Blu/Azzurro",
+                                   "Marrone") ~ 'Colorate',
+    colore_finiture_interne %in% c("Grigio") ~ 'Grigie',
+    colore_finiture_interne %in% c("Nero") ~ 'Nere'
+  ))
+names(cars)[names(cars) == 'colore_finiture_interne'] <- 'finiture'
+cars$finiture[is.na(cars$finiture)] = "Non specificato"
+# Finiture interne.
+
+table(cars$carburante)
+cars = cars %>% 
+  mutate(carburante = case_when(
+    carburante %in% c("Altro", "Benzina", "Benzina (Filtro antiparticolato)",
+                      "Benzina 91", "Benzina 91 (Filtro antiparticolato)",
+                      "Benzina E10 91", "Super 95", "Super E10 95",
+                      "Super Plus 98", "Super Plus E10 98") ~ 'Benzina',
+    carburante %in% c("Diesel", "Diesel (Filtro antiparticolato)") ~ 'Gasolio',
+    carburante %in% c("Gas di petrolio liquefatto",
+                      "Gas naturale", "GPL (Filtro antiparticolato)",
+                      "GPL", "Gas di petrolio liquefatto / Benzina 91",
+                      "Gas di petrolio liquefatto / Benzina 91 / Super 95 / Super Plus 98",
+                      "Gas di petrolio liquefatto / Benzina E10 91") ~ 'GPL',
+    carburante %in% c("Metano") ~ 'Metano',
+    carburante %in% c("Elettrica") ~ 'Elettrica'
+))
+cars$carburante[is.na(cars$carburante)] = "Benzina"
+# Carburante. L'auto elettrica presente lo è al 100% (non è ibrida).
+# Si verifica che tutte le auto con carburante mancante sono ibride.
+# Pertanto si imputa a "Benzina" il valore mancante (l'informazione
+# sull'ibrido resta nella variabile dedicata).
+
+table(cars$colore)
+cars = cars %>% 
+  mutate(colore = case_when(
+    colore %in% c("Arancione", "Argento", "Beige",
+                  "Bronzo", "Blu/Azzurro", "Giallo", "Lilla",
+                  "Marrone", "Oro", "Rosso", "Verde") ~ 'Colorata',
+    colore %in% c("Bianco") ~ 'Bianca',
+    colore %in% c("Nero") ~ 'Nera',
+    colore %in% c("Grigio") ~ 'Grigia',
+  ))
+cars$colore[is.na(cars$colore)] = "Non specificato"
+# Colore della macchina.
+
+table(cars$tipo_di_vernice)
+cars$tipo_di_vernice[cars$tipo_di_vernice == "Altro"] = "No"
+cars$tipo_di_vernice[cars$tipo_di_vernice == "Metallizzato"] = "Si"
+cars$tipo_di_vernice[is.na(cars$tipo_di_vernice)] = "No"
+names(cars)[names(cars) == 'tipo_di_vernice'] <- 'metallizzata'
+# Tipo di vernice.
+
+table(cars$materiale)
+cars = cars %>% 
+  mutate(materiale = case_when(
+    materiale %in% c("Alcantara", "Altro") ~ 'Altro',
+    materiale %in% c("Pelle parziale", "Pelle scamosciata",
+                     "Pelle totale") ~ 'Pelle',
+    materiale %in% c("Stoffa") ~ 'Stoffa'
+  ))
+cars$materiale[is.na(cars$materiale)] = "Altro"
+# Materiale rivestimenti.
+
+cars$emissioni_co_2_8 <- substr(cars$emissioni_co_2_8, 
+                                start = 1,
+                                stop = nchar(cars$emissioni_co_2_8) - 12)
+cars$emissioni_co_wltp_2_8 <- substr(cars$emissioni_co_wltp_2_8 , 
+                                     start = 1,
+                                     stop = nchar(cars$emissioni_co_wltp_2_8 ) - 12)
+cars$emissioni_co_2 <- NULL
+cars$emissioni_co_2_8[691] = 122
+cars$emissioni_co_2_8[721] = 139
+cars <- cars %>% 
+  mutate(emissioni = coalesce(emissioni_co_2_8, emissioni_co_wltp_2_8))
+cars$emissioni_co_2_8 = cars$emissioni_co_wltp_2_8 = NULL
+cars$emissioni[728] = 139
+cars$emissioni <- gsub(",", ".", cars$emissioni)
+cars$emissioni <- gsub(" ", "", cars$emissioni)
+cars$emissioni = as.numeric(cars$emissioni)
+# Si crea una nuova variabile "emissioni" che unisce i due contributi
+# delle variabili emissioni_co_2_8 ed emissioni_co_wltp_2_8. 
+
+cars$proprietari = NULL
+# Troppi NA.
+
+table(cars$classe_emissioni)
+cars = cars %>% 
+  mutate(classe_emissioni = case_when(
+    classe_emissioni %in% c("Euro 4") ~ 'Euro 4',
+    classe_emissioni %in% c("Euro 5") ~ 'Euro 5',
+    classe_emissioni %in% c("Euro 6", "Euro 6c") ~ 'Euro 6',
+    classe_emissioni %in% c("Euro 6d", "Euro 6d-TEMP") ~ 'Euro 6d-TEMP',
+  ))
+# Classe di emissioni.
+
+cars$consumo_di_carburante2_8 <- substr(cars$consumo_di_carburante2_8,
+                                        start = 1, stop = 3)
+cars$consumo_di_carburante_wltp_2_8 <- substr(cars$consumo_di_carburante_wltp_2_8,
+                                              start = 1, stop = 3)
+cars$consumo_di_carburante2_8 <- gsub(" l", "",
+                                      cars$consumo_di_carburante2_8)
+cars$consumo_di_carburante_wltp_2_8 <- gsub(" l", "",
+                                            cars$consumo_di_carburante_wltp_2_8)
+cars$consumo_di_carburante2_8 <- gsub(",", ".",
+                                      cars$consumo_di_carburante2_8)
+cars$consumo_di_carburante_wltp_2_8 <- gsub(",", ".", 
+                                            cars$consumo_di_carburante_wltp_2_8)
+cars <- cars %>% 
+  mutate(consumi = coalesce(consumo_di_carburante2_8,
+                            consumo_di_carburante_wltp_2_8))
+cars$consumo_di_carburante2_8 = cars$consumo_di_carburante_wltp_2_8 = NULL
+# Costruzione di una nuova variabile relativa ai consumi.
+
+
+# 10) Da stringa con optional a variabili indicatrici ------
+
+optional <- unlist(strsplit(as.character(cars$optional), "\\*"))
 # Lista con optional, intanto si cancellano quelli lunghissimi
 # che corrispondono a frasi e non ad optional.
 
-contiene_data <- function(acc) {
-  if (grepl("\\b\\d{2}/\\d{2}/\\d{4}(\\s.+)?\\b",
-            acc)) {
-    return(TRUE)
-  } else {
-    return(FALSE)
+top.optional <- names(sort(table(optional), decreasing = T)[5:50])
+# Questi sono i 45 optional più diffusi.
+
+cars$airbag.laterali = NA
+cars$airbag.conducente = NA
+cars$airbag.passeggero = NA
+cars$alzacristalli.elettrici = NA
+cars$chiusura.centralizzata = NA
+cars$specchietti.laterali.elettrici = NA
+cars$esp = NA
+cars$abs = NA
+cars$autoradio = NA
+cars$servosterzo = NA
+cars$isofix = NA
+cars$park.distance.control = NA
+cars$fendinebbia = NA
+cars$bluetooth = NA
+cars$cruise.control = NA
+cars$alzacristalli.elettrici = NA
+cars$volante.in.pelle = NA
+cars$volante.multifunzione = NA
+cars$climatizzatore = NA
+cars$sensori.parcheggio = NA
+cars$usb = NA
+cars$cerchi.in.lega = NA
+cars$computer.di.bordo = NA
+cars$controllo.pressione.gomme = NA
+cars$immobilizer = NA
+cars$sedile.posteriore.sdoppiato = NA
+cars$controllo.automatico.trazione = NA
+cars$airbag.testa = NA
+cars$bracciolo = NA
+cars$start.stop = NA
+cars$sensore.luminosita = NA
+cars$frenata.emergenza = NA
+cars$navigatore = NA
+cars$autoradio.digitale = NA
+cars$clima.automatico = NA
+cars$touch.screen = NA
+cars$chiusura.centralizzata.telecomandata = NA
+cars$sensore.pioggia = NA
+cars$fari.led = NA
+cars$mp3 = NA
+cars$vivavoce = NA
+cars$controllo.elettronico.corsia = NA
+cars$apple.car.play = NA
+cars$android.auto = NA
+cars$telecamera.posteriore = NA
+cars$vetri.oscurati = NA
+cars$hill.holder = NA
+# Si creano le variabili corrispondenti agli optional.
+
+start = which(colnames(cars) == "airbag.laterali")
+for (i in 1:NROW(cars)) {
+  for (j in start:NCOL(cars)) {
+    valore = ifelse(grep(top.optional[j-start+1], cars[i, "optional"]) == 0,
+                    0, 1) 
+    if (!is.na(valore) && length(valore) > 0) {
+      cars[i, j] <- 1
+    } else {
+      cars[i, j] <- 0  
+    }
   }
 }
-
-parole.da.eliminare <- c("audi" , "bmw" , "peugeot" , "fiat" , "[" ,
-                           "dsg" , "garanzia" , "climatronic" , "sanifichiamo" ,
-                           "dotazione" , "(" , "+" , "sabato" , "fatta" , 
-                           "facebook" , "num" , "volcano" , "''" , 
-                           "selec-terrain" , "uconnect" , "canali" , "vie" ,
-                           "jbl" , "virtual" , ")" , "]" , "sentry" ,
-                           "valutare" , "qualità" , "garantite" , "via" ,
-                           "offerta" , "serie" , "simone" , "finanziamenti" ,
-                           "/" , "glossy" , "cluster" , "ice" , "60/40" ,
-                           "garantiamo" , "prepariamo" , "esperti" , "consegna" ,
-                           "velocitaà" , "vw" , "lunedì" , "telefono" , "@" ,
-                           "email" , "escluso" , "consegna" , "autosalone" ,
-                           "finanziamento" , "condizioni" , "," , "tagliandi" ,
-                           "tagliando" , "sanificazione" , "r-line" , "we" ,
-                           "dt270rw" , "telaio" , "revisione" , "piaciuta" ,
-                           "wheels" , "acoustic" , "active" , "armrest" ,
-                           "tailgate" , "blow-by" , "connecteddrive" , "co2" ,
-                           "braking" , "eu-" , "satinised" , "tagliandata" ,
-                           "x19" , "1.400" , "crdi" , "grandinata" , "vero" ,
-                           "sostituito" , "minerale" , "ctr." , "radioricevitore" ,
-                           "glonass" , "sx" , "anthracite" , "steptronic" , 
-                           "oil" , "lumbar" , "edrive")
-
-contiene_nomi <- function(acc, nomi){
-  if (grepl(paste(nomi, collapse = "|"), acc)) {
-    return(TRUE)
-  } else {
-    return(FALSE)
-  }
-}
-
-normalize.optional <- function(op){
-  op <- op[nchar(op < 50)]
-  op <- tolower(op)
-  op <- op[!sapply(op, contiene_data)]  
-  #op <- op[!sapply(op, contiene_nomi, nomi = parole.da.eliminare)]
-  op <- unique(op)
-}
-
-optional <- normalize.optional(optional)
-
-optional <- optional[nchar(optional) < 50]
-sort(optional)
-optional <- optional[-c(1:17)]
-optional <- tolower(optional)
-optional <- unique(optional)
+cars$optional = NULL
+# Adesso vi sono delle variabili indicatrici che indicano se ogni macchina
+# ha o no un certo optional.
