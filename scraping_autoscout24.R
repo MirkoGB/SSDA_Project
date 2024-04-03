@@ -2,6 +2,7 @@
 
 library(rvest)
 library(xml2)
+library(dplyr)
 # Pacchetti richiesti.
 
 nomi.colonna <- page %>% 
@@ -159,6 +160,8 @@ for (i in 1:50) {
   print(i)
   Sys.sleep(5)
 }
+
+
 all_links <- all_links[!all_links %in% 
                          c('https://www.autoscout24.itNA')]
 # Rimozione dei link NA.
@@ -190,6 +193,39 @@ cars <- cars %>%
 
 write.csv(cars, "macchine_scraping.csv", row.names = F)
 # Dati grezzi.
+
+
+#### ---- Aggiornamento dati auto ---- ####
+#* Per evitare di dover riscaricare da capo i dati, si può prendere il dataset precedente
+#* Confrontare il numero delle righe con il numero dei link, visto che ad ogni link corrisponde un'auto
+#* E si fa ripartire il ciclo di "get_a_car" per questa differenza
+#* In tal modo poi è possibile fare solo bind_rows con il dataset precedente grezzo e risalvarlo di nuovo
+
+#carico il dataframe vecchio
+temp_dataframe = read.csv("macchine_scraping.csv")
+#creo quello con le "novità"
+new_cars = data.frame()
+
+#riempo le nuove auto
+for (i in dim(temp_dataframe)[1]:length(all_links)) {
+  auto <- data.frame(get_a_car(all_links[i]))
+  new_cars <- bind_rows(new_cars, auto)
+  print(i)
+  Sys.sleep(4)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ------ PREZZO SECONDO AUTOSCOUT24 ------ 
