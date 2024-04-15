@@ -243,98 +243,127 @@ for (i in dim(temp_dataframe)[1]:length(all_links)) {
 library(tidyverse)
 cars <- read.csv(file.choose())
 colnames(cars)
-# Dataset "macchine_scraping.csv".
+# Dataset "cars-raw.csv".
 
 # 1) Eliminazione colonne inutili ------
 
-cars[, 57:69] = NULL
-cars[, 5:11]  = NULL
-cars$offerta_n = cars$costo_del_trasferimento = NULL
+cars$cambio_cinghia_distribuzione = NULL
+cars$disponibilita = NULL
+cars$colore_specifico = NULL
+cars$revisione = NULL
+cars$ultimo_tagliando = NULL
+# Troppi valori mancanti.
+
+cars$anticipo = NULL
+cars$offerta_n = NULL
+cars$importo_da_pagare = NULL
+cars$importo_finanziato = NULL
+cars$importo_lordo_del_credito = NULL
+cars$costo_del_trasferimento = NULL
 cars$acconto = NULL
+cars$importo_totale_dovuto = NULL
+cars$taeg = NULL
+cars$taeg_2 = NULL
+cars$taeg_ = NULL
+cars$intrattenimento___media = NULL
+cars$costo_del_trasferimento_ = NULL
+cars$costo_di_registrazione = NULL
+cars$importo_lordo_del_credito__ = NULL
+cars$importo_totale_netto_del_credito = NULL
+cars$acconto_1 = NULL
+cars$offerta_n_ = NULL
+cars$spese = NULL
+cars$rata = NULL
+cars$rata_finale = NULL
+cars$rata_mensile = NULL
+cars$durata = NULL
+cars$tan_fisso = NULL
 # Le colonne relative alla rateizzazione e ai prezzi sono leaker.
 
-cars$comfort = cars$intrattenimento_media = NULL
-cars$extra = cars$sicurezza =  NULL
+cars$comfort = NULL
+cars$intrattenimento_media = NULL
+cars$extra = NULL
+cars$sicurezza =  NULL
 cars$versione_per_nazione = NULL
 # Gli optional sono nell'apposita colonna.
 
 
 # 2) Trasformazione nomi dei modelli -------
 
-panda <- grep("Fiat", cars$marca)[1:19] 
-sandero <- grep("Dacia", cars$marca)[1:19] 
-ypsilon <- grep("Lancia", cars$marca) 
-yaris <- grep("Toyota", cars$marca)[1:19] 
-cinquecento <- grep("Fiat", cars$marca)[20:38] 
-troc <- grep("Volkswagen", cars$marca)[1:18]
-captur <- grep("Renault", cars$marca)[1:19]
-c3 <- grep("Citroen", cars$marca)[1:19]
-puma <- grep("Ford", cars$marca)[1:19]
-duster <- grep("Dacia", cars$marca)[20:38]
-renegade <- grep("Jeep", cars$marca)[1:19]
-cinquecentox <- grep("Fiat", cars$marca)[39:57] 
-clio <- grep("Renault", cars$marca)[20:38]
-p208 <- grep("Peugeot", cars$marca)[1:18]
-p2008 <- grep("Peugeot", cars$marca)[19:37]
-yariscross <- grep("Toyota", cars$marca)[20:36] 
-corsa <- grep("Opel", cars$marca)[1:18] 
-avenger <- grep("Jeep", cars$marca)[20:38] 
-compass <- grep("Jeep", cars$marca)[39:57] 
-tcross <- grep("Volkswagen", cars$marca)[19:56] 
-qashqai <- grep("Nissan", cars$marca)[1:19] 
-zs <- grep("MG", cars$marca) 
-sportage <- grep("Kia", cars$marca)[1:17] 
-p3008 <- grep("Peugeot", cars$marca)[38:56] 
-tonale <- grep("Alfa Romeo", cars$marca) 
-polo <- grep("Volkswagen", cars$marca)[57:75] 
-kuga <- grep("Ford", cars$marca)[20:38] 
-tiguan <- grep("Volkswagen", cars$marca)[76:93] 
-focus <- grep("Ford", cars$marca)[39:57] 
-aygox <- grep("Toyota", cars$marca)[37:55] 
-q3 <- grep("Audi", cars$marca)[1:14] 
-x1 <- grep("BMW", cars$marca) 
-i10 <- grep("Hyundai", cars$marca)[1:19] 
-tucson <- grep("Hyundai", cars$marca)[20:38] 
-c3aircross <- grep("Citroen", cars$marca)[20:36] 
-formentor <- grep("CUPRA", cars$marca) 
-gla <- grep("Mercedes", cars$marca) 
-fiesta <- grep("Ford", cars$marca)[58:76] 
-picanto <- grep("Kia", cars$marca)[18:36] 
-juke <- grep("Nissan", cars$marca)[20:36] 
-a3 <- grep("Audi", cars$marca)[15:33] 
-mokka <- grep("Opel", cars$marca)[19:37] 
-ignis <- grep("Suzuki", cars$marca)[1:18] 
-tipo <- grep("Fiat", cars$marca)[58:76] 
-golf <- grep("Volkswagen", cars$marca)[94:111] 
-austral <- grep("Renault", cars$marca)[39:43] 
-a1 <- grep("Audi", cars$marca)[34:51] 
-countryman <- grep("MINI", cars$marca) 
-taigo <- grep("Volkswagen", cars$marca)[112:129]
-vitara <- grep("Suzuki", cars$marca)[19:37] 
-# Vettori di indici.
-
-indici <- list(a1, a3, austral, avenger, aygox, c3, c3aircross,
-               captur, cinquecento, cinquecentox, clio, compass,
-               corsa, countryman, duster, fiesta, focus, formentor,
-               gla, golf, i10, ignis, juke, kuga, mokka,
-               p2008, p208, p3008, panda, picanto, polo, puma,
-               q3, qashqai, renegade, sandero, sportage, taigo,
-               tcross, tiguan, tipo, tonale, troc, tucson,
-               vitara, x1, yaris, yariscross, ypsilon, zs)
-labels <- c("A1", "A3", "Austral", "Avenger", "Aygo-X", "C3", "C3 Aircross",
-            "Captur", "500", "500X", "Clio", "Compass",
-            "Corsa", "Countryman", "Duster", "Fiesta", "Focus", "Formentor",
-            "GLA", "Golf", "i10", "Ignis", "Juke", "Kuga", "Mokka",
-            "2008", "208", "3008", "Panda", "Picanto", "Polo", "Puma",
-            "Q3", "Qashqai", "Renegade", "Sandero", "Sportage", "Taigo",
-            "T-Cross", "Tiguan", "Tipo", "Tonale", "T-Roc", "Tucson",
-            "Vitara", "X1", "Yaris", "Yaris Cross", "Ypsilon", "ZS")
-# Conversione in lista dei vettori di indici e labels di ogni modello.
-
-for (i in 1:length(indici)) {
-  cars$modello[indici[[i]]] <- labels[i]
-}
-# Assegnazione ad ogni macchina del nome del modello.
+# panda <- grep("Fiat", cars$marca)[1:19] 
+# sandero <- grep("Dacia", cars$marca)[1:19] 
+# ypsilon <- grep("Lancia", cars$marca) 
+# yaris <- grep("Toyota", cars$marca)[1:19] 
+# cinquecento <- grep("Fiat", cars$marca)[20:38] 
+# troc <- grep("Volkswagen", cars$marca)[1:18]
+# captur <- grep("Renault", cars$marca)[1:19]
+# c3 <- grep("Citroen", cars$marca)[1:19]
+# puma <- grep("Ford", cars$marca)[1:19]
+# duster <- grep("Dacia", cars$marca)[20:38]
+# renegade <- grep("Jeep", cars$marca)[1:19]
+# cinquecentox <- grep("Fiat", cars$marca)[39:57] 
+# clio <- grep("Renault", cars$marca)[20:38]
+# p208 <- grep("Peugeot", cars$marca)[1:18]
+# p2008 <- grep("Peugeot", cars$marca)[19:37]
+# yariscross <- grep("Toyota", cars$marca)[20:36] 
+# corsa <- grep("Opel", cars$marca)[1:18] 
+# avenger <- grep("Jeep", cars$marca)[20:38] 
+# compass <- grep("Jeep", cars$marca)[39:57] 
+# tcross <- grep("Volkswagen", cars$marca)[19:56] 
+# qashqai <- grep("Nissan", cars$marca)[1:19] 
+# zs <- grep("MG", cars$marca) 
+# sportage <- grep("Kia", cars$marca)[1:17] 
+# p3008 <- grep("Peugeot", cars$marca)[38:56] 
+# tonale <- grep("Alfa Romeo", cars$marca) 
+# polo <- grep("Volkswagen", cars$marca)[57:75] 
+# kuga <- grep("Ford", cars$marca)[20:38] 
+# tiguan <- grep("Volkswagen", cars$marca)[76:93] 
+# focus <- grep("Ford", cars$marca)[39:57] 
+# aygox <- grep("Toyota", cars$marca)[37:55] 
+# q3 <- grep("Audi", cars$marca)[1:14] 
+# x1 <- grep("BMW", cars$marca) 
+# i10 <- grep("Hyundai", cars$marca)[1:19] 
+# tucson <- grep("Hyundai", cars$marca)[20:38] 
+# c3aircross <- grep("Citroen", cars$marca)[20:36] 
+# formentor <- grep("CUPRA", cars$marca) 
+# gla <- grep("Mercedes", cars$marca) 
+# fiesta <- grep("Ford", cars$marca)[58:76] 
+# picanto <- grep("Kia", cars$marca)[18:36] 
+# juke <- grep("Nissan", cars$marca)[20:36] 
+# a3 <- grep("Audi", cars$marca)[15:33] 
+# mokka <- grep("Opel", cars$marca)[19:37] 
+# ignis <- grep("Suzuki", cars$marca)[1:18] 
+# tipo <- grep("Fiat", cars$marca)[58:76] 
+# golf <- grep("Volkswagen", cars$marca)[94:111] 
+# austral <- grep("Renault", cars$marca)[39:43] 
+# a1 <- grep("Audi", cars$marca)[34:51] 
+# countryman <- grep("MINI", cars$marca) 
+# taigo <- grep("Volkswagen", cars$marca)[112:129]
+# vitara <- grep("Suzuki", cars$marca)[19:37] 
+# # Vettori di indici.
+# 
+# indici <- list(a1, a3, austral, avenger, aygox, c3, c3aircross,
+#                captur, cinquecento, cinquecentox, clio, compass,
+#                corsa, countryman, duster, fiesta, focus, formentor,
+#                gla, golf, i10, ignis, juke, kuga, mokka,
+#                p2008, p208, p3008, panda, picanto, polo, puma,
+#                q3, qashqai, renegade, sandero, sportage, taigo,
+#                tcross, tiguan, tipo, tonale, troc, tucson,
+#                vitara, x1, yaris, yariscross, ypsilon, zs)
+# labels <- c("A1", "A3", "Austral", "Avenger", "Aygo-X", "C3", "C3 Aircross",
+#             "Captur", "500", "500X", "Clio", "Compass",
+#             "Corsa", "Countryman", "Duster", "Fiesta", "Focus", "Formentor",
+#             "GLA", "Golf", "i10", "Ignis", "Juke", "Kuga", "Mokka",
+#             "2008", "208", "3008", "Panda", "Picanto", "Polo", "Puma",
+#             "Q3", "Qashqai", "Renegade", "Sandero", "Sportage", "Taigo",
+#             "T-Cross", "Tiguan", "Tipo", "Tonale", "T-Roc", "Tucson",
+#             "Vitara", "X1", "Yaris", "Yaris Cross", "Ypsilon", "ZS")
+# # Conversione in lista dei vettori di indici e labels di ogni modello.
+# 
+# for (i in 1:length(indici)) {
+#   cars$modello[indici[[i]]] <- labels[i]
+# }
+# # Assegnazione ad ogni macchina del nome del modello.
 
 
 # 3) Prezzi, chilometraggio, cilindrata -------
@@ -375,37 +404,30 @@ cars <- cars %>%
 # nuovi, per il quale si assume che il valore sia pari a 2024.
 
 
-# 5) Variabili inutili ------
-
-cars$cambio_cinghia_distribuzione = cars$disponibilita = NULL
-cars$colore_specifico = cars$revisione = NULL
-cars$ultimo_tagliando = NULL
-
-
-# 6) Nomi dei paesi ------
+# 5) Nomi dei paesi ------
 
 find.region <- function(citta){
-  citta <- gsub(".*\\b(cassina|binasco|seregno|corsico|gallarate|milano|giovanni|cinisello|capriolo|gerola|bulgarograsso|naviglio|lecco|pavia|brescia|lodi|lomellina|monza|bergamo|castiglione|como|cremona|mantova|sondrio|varese|BG|BS|CO|CR|LC|LO|MN|MI|MB|PV|SO|VA)\\b.*", 
+  citta <- gsub(".*\\b(tresenda|cassina|binasco|seregno|corsico|gallarate|milano|giovanni|cinisello|capriolo|gerola|bulgarograsso|naviglio|lecco|pavia|brescia|lodi|lomellina|monza|bergamo|castiglione|como|cremona|mantova|sondrio|varese|BG|BS|CO|CR|LC|LO|MN|MI|MB|PV|SO|VA)\\b.*", 
                 "Lombardia", citta, ignore.case = TRUE)
-  citta <- gsub(".*\\b(ponzano|thiene|treviso|belluno|padova|vicenza|veneto|limena|verona|venezia|monselice|rovigo|TV|BL|PD|VI|VE|VR|RO)\\b.*", 
+  citta <- gsub(".*\\b(legnago|ponzano|thiene|treviso|belluno|padova|vicenza|veneto|limena|verona|venezia|monselice|rovigo|TV|BL|PD|VI|VE|VR|RO)\\b.*", 
                 "Veneto", citta, ignore.case = TRUE)
-  citta <- gsub(".*\\b(verolengo|saluzzo|alessandria|marengo|collegno|torinese|asti|biella|cuneo|novara|torino|vercelli|AL|AT|BI|CN|NO|TO|VB|VC)\\b.*", 
+  citta <- gsub(".*\\b(ciriè|alba|verolengo|saluzzo|alessandria|marengo|collegno|torinese|asti|biella|cuneo|novara|torino|vercelli|AL|AT|BI|CN|NO|TO|VB|VC)\\b.*", 
                 "Piemonte", citta, ignore.case = TRUE)
   citta <- gsub(".*\\b(frosinone|latina|rieti|roma|viterbo|ciampino|FR|LT|RI|RM|VT|ROMA)\\b.*", 
                 "Lazio", citta, ignore.case = TRUE)
   citta <- gsub(".*\\b(bologna|panaro|ferrara|forlì|forli|forli-cesena|cesena|modena|parma|piacenza|ravenna|emilia|rimini|BO|FE|FC|MO|PR|PC|RA|RE|RN)\\b.*", 
                 "Emilia-Romagna", citta, ignore.case = TRUE)
-  citta <- gsub(".*\\b(firenze|prato|lucca|carrara|fiorentino|grosseto|livorno|pisa|pistoia|siena|arezzo|AR|FI|GR|LI|LU|MS|PI|PT|PO|SI)\\b.*", 
+  citta <- gsub(".*\\b(pietrasanta|firenze|prato|lucca|carrara|fiorentino|grosseto|livorno|pisa|pistoia|siena|arezzo|AR|FI|GR|LI|LU|MS|PI|PT|PO|SI)\\b.*", 
                 "Toscana", citta, ignore.case = TRUE)
   citta <- gsub(".*\\b(trento|bolzano|TN|BZ)\\b.*", 
                 "Trentino-AA", citta, ignore.case = TRUE)
-  citta <- gsub(".*\\b(terni|perugia|PG|TR)\\b.*", 
+  citta <- gsub(".*\\b(corciano|terni|perugia|PG|TR)\\b.*", 
                 "Umbria", citta, ignore.case = TRUE)
   citta <- gsub(".*\\b(genova|imperia|spezia|savona|GE|IM|SP|SV)\\b.*", 
                 "Liguria", citta, ignore.case = TRUE)
-  citta <- gsub(".*\\b(gorizia|pordenone|trieste|udine|GO|PN|TS|UD)\\b.*", 
+  citta <- gsub(".*\\b(Friuli-VG|gorizia|pordenone|trieste|udine|GO|PN|TS|UD)\\b.*", 
                 "Friuli-VG", citta, ignore.case = TRUE)
-  citta <- gsub(".*\\b(avellino|benevento|caserta|napoli|salerno|AV|BN|CE|NA|SA)\\b.*", 
+  citta <- gsub(".*\\b(Campania|avellino|benevento|caserta|napoli|salerno|AV|BN|CE|NA|SA)\\b.*", 
                 "Campania", citta, ignore.case = TRUE)
   citta <- gsub(".*\\b(catanzaro|CZ|cosenza|CS|crotone|KR|calabria|RC|valentia|VV)\\b.*", 
                 "Calabria", citta, ignore.case = TRUE)
@@ -417,6 +439,10 @@ find.region <- function(citta){
                 "Valle d'Aosta", citta, ignore.case = TRUE)
   citta <- gsub(".*\\b(palermo|PA)\\b.*", 
                 "Sicilia", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(teramo|pescara)\\b.*", 
+                "Abruzzo", citta, ignore.case = TRUE)
+  citta <- gsub(".*\\b(potenza)\\b.*", 
+                "Basilicata", citta, ignore.case = TRUE)
   return(citta)
 }
 cars$paese = find.region(cars$paese)
@@ -425,7 +451,7 @@ names(cars)[names(cars) == 'paese'] <- 'regione'
 # o della concessionaria.
 
 
-# 7) Neopatentati e potenza ------
+# 6) Neopatentati e potenza ------
 
 kW <- sub("\\s*kW.*", "", cars$potenza)
 cars$kW = kW
@@ -449,7 +475,7 @@ cars$per_neopatentati = ifelse(cars$kW <= 55, "Si", "No")
 # con certezza sulla base dei kW e si imputano molti NA.
 
 
-# 8) Peso e carrozzeria ------
+# 7) Peso e carrozzeria ------
 
 peso <- substr(cars$peso_a_vuoto, start = 1,
                stop = nchar(cars$peso_a_vuoto) - 3)
@@ -492,7 +518,7 @@ names(cars)[names(cars) == 'carrozzeria.new'] <- 'carrozzeria'
 # associato.
 
 
-# 9) Modifica delle variabili rimanenti
+# 8) Modifica delle variabili rimanenti
 
 table(cars$tagliandi_certificati)
 cars$tagliandi_certificati[is.na(cars$tagliandi_certificati)] = "No"
@@ -521,13 +547,13 @@ cars$veicolo_non_fumatori[cars$veicolo_non_fumatori == "Sì"] = "Si"
 table(cars$usato_garantito)
 cars = cars %>% 
   mutate(usato_garantito = case_when(
-    usato_garantito %in% c("0 mesi") ~ 'No',
+    usato_garantito %in% c("0 mesi", "1 mesi") ~ 'No',
     usato_garantito %in% c("6 mesi", "12 mesi", "Sì") ~ '6-12 mesi',
     usato_garantito %in% c("14 mesi", "17 mesi", "18 mesi", "19 mesi",
                            "20 mesi", "22 mesi", "23 mesi") ~ '13-23 mesi',
     usato_garantito %in% c("24 mesi", "36 mesi") ~ '24-36 mesi',
-    usato_garantito %in% c("48 mesi", "60 mesi", "72 mesi", "74 mesi",
-                           "84 mesi") ~ 'Oltre 36 mesi'
+    usato_garantito %in% c("40 mesi", "48 mesi", "60 mesi", "72 mesi", 
+                           "74 mesi", "84 mesi") ~ 'Oltre 36 mesi'
   ))
 cars$usato_garantito[is.na(cars$usato_garantito)] = "No"
 # Per convenzione si assume che la categoria "sì" vada a finire
@@ -537,8 +563,8 @@ table(cars$colore_finiture_interne)
 cars = cars %>% 
   mutate(colore_finiture_interne = case_when(
     colore_finiture_interne %in% c("Altro", "Arancione", "Beige",
-                                   "Bianco", "Blu/Azzurro",
-                                   "Marrone") ~ 'Colorate',
+                                   "Bianco", "Blu/Azzurro", "Giallo",
+                                   "Marrone", "Rosso") ~ 'Colorate',
     colore_finiture_interne %in% c("Grigio") ~ 'Grigie',
     colore_finiture_interne %in% c("Nero") ~ 'Nere'
   ))
@@ -562,8 +588,10 @@ cars = cars %>%
     carburante %in% c("Metano") ~ 'Metano',
     carburante %in% c("Elettrica") ~ 'Elettrica'
 ))
+# nocarb <- cars %>% filter(is.na(carburante))
+# View(nocarb)
 cars$carburante[is.na(cars$carburante)] = "Benzina"
-# Carburante. L'auto elettrica presente lo è al 100% (non è ibrida).
+# Carburante. Le auto elettriche presenti lo sono al 100% (non ibride).
 # Si verifica che tutte le auto con carburante mancante sono ibride.
 # Pertanto si imputa a "Benzina" il valore mancante (l'informazione
 # sull'ibrido resta nella variabile dedicata).
@@ -606,8 +634,8 @@ cars$emissioni_co_wltp_2_8 <- substr(cars$emissioni_co_wltp_2_8 ,
                                      start = 1,
                                      stop = nchar(cars$emissioni_co_wltp_2_8 ) - 12)
 cars$emissioni_co_2 <- NULL
-cars$emissioni_co_2_8[691] = 122
-cars$emissioni_co_2_8[721] = 139
+cars$emissioni_co_2_8[163] = 96
+cars$emissioni_co_2_8[164] = 99
 cars <- cars %>% 
   mutate(emissioni = coalesce(emissioni_co_2_8, emissioni_co_wltp_2_8))
 cars$emissioni_co_2_8 = cars$emissioni_co_wltp_2_8 = NULL
@@ -619,15 +647,15 @@ cars$emissioni = as.numeric(cars$emissioni)
 # delle variabili emissioni_co_2_8 ed emissioni_co_wltp_2_8. 
 
 cars$proprietari = NULL
-# Troppi NA.
+# Troppi NA e impossibile imputare.
 
 table(cars$classe_emissioni)
 cars = cars %>% 
   mutate(classe_emissioni = case_when(
-    classe_emissioni %in% c("Euro 4") ~ 'Euro 4',
+    classe_emissioni %in% c("Euro 2", "Euro 3", "Euro 4") ~ 'Euro 4 o meno',
     classe_emissioni %in% c("Euro 5") ~ 'Euro 5',
     classe_emissioni %in% c("Euro 6", "Euro 6c") ~ 'Euro 6',
-    classe_emissioni %in% c("Euro 6d", "Euro 6d-TEMP") ~ 'Euro 6d-TEMP',
+    classe_emissioni %in% c("Euro 6d", "Euro 6d-TEMP", "Euro 6e") ~ 'Euro 6 Plus',
   ))
 # Classe di emissioni.
 
@@ -656,59 +684,57 @@ optional <- unlist(strsplit(as.character(cars$optional), "\\*"))
 # Lista con optional, intanto si cancellano quelli lunghissimi
 # che corrispondono a frasi e non ad optional.
 
-top.optional <- names(sort(table(optional), decreasing = T)[5:50])
-# Questi sono i 45 optional più diffusi.
+top.optional <- names(sort(table(optional), decreasing = T)[14:58])
+# Questi sono gli optional più diffusi (tolti i più banali).
 
-cars$airbag.laterali = NA
-cars$airbag.conducente = NA
-cars$airbag.passeggero = NA
-cars$alzacristalli.elettrici = NA
-cars$chiusura.centralizzata = NA
-cars$specchietti.laterali.elettrici = NA
-cars$esp = NA
-cars$abs = NA
 cars$autoradio = NA
-cars$servosterzo = NA
 cars$isofix = NA
 cars$park.distance.control = NA
+cars$cruise.control = NA
 cars$fendinebbia = NA
 cars$bluetooth = NA
-cars$cruise.control = NA
-cars$alzacristalli.elettrici = NA
 cars$volante.in.pelle = NA
-cars$volante.multifunzione = NA
 cars$climatizzatore = NA
 cars$sensori.parcheggio = NA
+cars$volante.multifunzione = NA
 cars$usb = NA
-cars$cerchi.in.lega = NA
 cars$computer.di.bordo = NA
 cars$controllo.pressione.gomme = NA
-cars$immobilizer = NA
 cars$sedile.posteriore.sdoppiato = NA
+cars$cerchi.in.lega = NA
 cars$controllo.automatico.trazione = NA
+cars$immobilizer = NA
 cars$airbag.testa = NA
 cars$bracciolo = NA
-cars$start.stop = NA
 cars$sensore.luminosita = NA
-cars$frenata.emergenza = NA
+cars$start.stop = NA
 cars$navigatore = NA
 cars$autoradio.digitale = NA
-cars$clima.automatico = NA
+cars$frenata.emergenza = NA
 cars$touch.screen = NA
 cars$chiusura.centralizzata.telecomandata = NA
 cars$sensore.pioggia = NA
-cars$fari.led = NA
+cars$clima.automatico = NA
 cars$mp3 = NA
+cars$fari.led = NA
 cars$vivavoce = NA
 cars$controllo.elettronico.corsia = NA
-cars$apple.car.play = NA
 cars$android.auto = NA
-cars$telecamera.posteriore = NA
-cars$vetri.oscurati = NA
+cars$apple.car.play = NA
 cars$hill.holder = NA
+cars$telecamera.posteriore = NA
+cars$cruise.control = NA
+cars$vetri.oscurati = NA
+cars$sound.system = NA
+cars$luci.diurne.led = NA
+cars$luci.diurne = NA
+cars$riconoscimento.segnali = NA
+cars$sensori.parcheggio.anteriori = NA
+cars$kit.antipanne = NA
+cars$antifurto = NA
 # Si creano le variabili corrispondenti agli optional.
 
-start = which(colnames(cars) == "airbag.laterali")
+start = which(colnames(cars) == "autoradio")
 for (i in 1:NROW(cars)) {
   for (j in start:NCOL(cars)) {
     valore = ifelse(grep(top.optional[j-start+1], cars[i, "optional"]) == 0,
