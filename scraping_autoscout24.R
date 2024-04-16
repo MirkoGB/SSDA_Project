@@ -808,10 +808,35 @@ cars$modello = factor(cars$modello)
 cars$trazione = factor(cars$trazione)
 # Il dataset è pronto.
 
-cars2 <- cars %>% 
+cars <- cars %>% 
   distinct(marca, modello, regione, prezzo_auto,
            chilometraggio, anno_prod, .keep_all = T)
 # Alcune macchine erano ragionevolmente dei "doppioni".
 
-dati = read.csv(file.choose(), stringsAsFactors = T)
+summary(cars$marce)
+# Ci si accorge che alcune macchine con il cambio automatico
+# hanno un numero di marce pari a 0 o 1, cosa ovviamente 
+# irrealistica.
+# Per rimediare, si decide di rendere la variabile "marce" come
+# fattoriale e accorpare "marce" e "cambio", introducendo il 
+# nuovo livello "automatico".
+
+cars <- cars %>% 
+  mutate(marce = case_when(
+    cambio == "Automatico" ~ "Automatico",
+    TRUE ~ as.character(marce)
+  ))
+cars$cambio = NULL
+cars$marce = factor(cars$marce)
+table(cars$marce)
+cars <- cars %>% 
+  mutate(marce = case_when(
+    marce == "6" ~ "6 o piu",
+    marce == "7" ~ "6 o piu",
+    marce == "8" ~ "6 o piu",
+    TRUE ~ as.character(marce)
+  ))
+# Nuova variabile "marce" senza incongruenze.
+
+# cars = read.csv(file.choose(), stringsAsFactors = T)
 # File "cars-clean.csv".
