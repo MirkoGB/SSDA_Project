@@ -387,6 +387,7 @@ cars$anno_prod[is.na(cars$anno_prod)] = "2024"
 cars$anno = cars$anno_di_produzione = NULL
 cars <- cars %>%
   dplyr::relocate(anno_prod, .before = carrozzeria)
+cars$anno_prod = as.numeric(cars$anno_prod)
 # L'anno di produzione mancante si ha solamente per i veicoli
 # nuovi, per il quale si assume che il valore sia pari a 2024.
 
@@ -434,6 +435,7 @@ find.region <- function(citta){
 }
 cars$paese = find.region(cars$paese)
 names(cars)[names(cars) == 'paese'] <- 'regione'
+cars$regione = factor(cars$regione)
 # Ora il dataframe contiene la regione e non il paese del rivenditore
 # o della concessionaria.
 
@@ -451,7 +453,8 @@ cars = cars %>%
   ))
 cars <- cars %>%
   dplyr::relocate(zona_geografica, .after = regione)
-# Zona geografica.
+cars$zona_geografica = factor(cars$zona_geografica)
+# Ripartizione geografica.
 
 
 # 6) Neopatentati e potenza ------
@@ -460,18 +463,21 @@ kW <- sub("\\s*kW.*", "", cars$potenza)
 cars$kW = kW
 cars <- cars %>%
   dplyr::relocate(kW, .before = potenza)
+cars$kW = as.numeric(cars$kW)
 # Indicazione sui kW.
 
 cv <- gsub(".*?\\((.*?)\\).*", "\\1", cars$potenza)
 cars$cv <- substr(cv, start = 1, stop = nchar(cv) - 3)
 cars <- cars %>%
   dplyr::relocate(cv, .after = kW)
+cars$cv = as.numeric(cars$cv)
 # Indicazione sui cavalli del motore.
 
 cars$potenza = NULL
 # Non serve più.
 
 cars$per_neopatentati = ifelse(cars$kW <= 55, "Si", "No")
+cars$per_neopatentati = factor(cars$per_neopatentati)
 # Il limite per i neopatentati è 55 kW.
 # In questo modo la variabile risulta essere definita
 # con certezza sulla base dei kW e si imputano molti NA.
@@ -479,15 +485,15 @@ cars$per_neopatentati = ifelse(cars$kW <= 55, "Si", "No")
 
 # 7) Peso e carrozzeria ------
 
-peso <- substr(cars$peso_a_vuoto, start = 1,
-               stop = nchar(cars$peso_a_vuoto) - 3)
-cars$peso_a_vuoto = peso
+cars$peso_a_vuoto = substr(cars$peso_a_vuoto, start = 1,
+                           stop = nchar(cars$peso_a_vuoto) - 3)
 cars$peso_a_vuoto <- gsub("\\.", "", cars$peso_a_vuoto)
 # Pulizia del peso a vuoto.
 
 mediane_per_modello <- cars %>%
   group_by(modello) %>%
-  summarise(mediana_peso = median(as.numeric(peso_a_vuoto), na.rm = TRUE))
+  summarise(mediana_peso = median(as.numeric(peso_a_vuoto),
+                                  na.rm = TRUE))
 cars <- left_join(cars, mediane_per_modello, by = "modello")
 # Si aggiunge al dataframe una nuova colonna con le mediane dei
 # pesi dei modelli.
@@ -495,6 +501,7 @@ cars <- left_join(cars, mediane_per_modello, by = "modello")
 cars <- cars %>%
   mutate(peso = ifelse(is.na(peso_a_vuoto), mediana_peso, peso_a_vuoto))
 cars$peso_a_vuoto = NULL
+cars$peso = as.numeric(cars$peso)
 # I dati mancanti del peso sono stati imputati con la mediana
 # fatta per modello (sembra ragionevole).
 
@@ -530,8 +537,8 @@ cars <- cars %>%
   dplyr::relocate(carrozzeria.new, .before = carrozzeria)
 cars$carrozzeria = NULL
 names(cars)[names(cars) == 'carrozzeria.new'] <- 'carrozzeria'
-# Ora ogni auto ha il corretto tipo di carrozzeria 
-# associato.
+cars$carrozzeria = factor(cars$carrozzeria)
+# Ora ogni auto ha il corretto tipo di carrozzeria associato.
 
 
 # 8) Modifica delle variabili rimanenti
@@ -539,25 +546,30 @@ names(cars)[names(cars) == 'carrozzeria.new'] <- 'carrozzeria'
 table(cars$tagliandi_certificati)
 cars$tagliandi_certificati[is.na(cars$tagliandi_certificati)] = "No"
 cars$tagliandi_certificati[cars$tagliandi_certificati == "Sì"] = "Si"
+cars$tagliandi_certificati = factor(cars$tagliandi_certificati)
 # Tagliandi certificati.
 
 table(cars$tipo_di_veicolo)
 cars$tipo_di_veicolo[cars$tipo_di_veicolo %in% c("Aziendale", "Dimostrativo", "KM0")] = "Nuovo"
+cars$tipo_di_veicolo = factor(cars$tipo_di_veicolo)
 # Tipo di veicolo.
 
 cars$altre_fonti_energetiche[is.na(cars$altre_fonti_energetiche)] = "No"
 cars$altre_fonti_energetiche[cars$altre_fonti_energetiche == "Corrente elettrica "] = "Si"
 names(cars)[names(cars) == 'altre_fonti_energetiche'] <- 'ibrida'
+cars$ibrida = factor(cars$ibrida)
 # Veicolo ibrido o no.
 
 table(cars$tipo_di_cambio)
 cars$tipo_di_cambio[cars$tipo_di_cambio == "Semiautomatico"] = "Automatico"
 names(cars)[names(cars) == 'tipo_di_cambio'] <- 'cambio'
+cars$cambio = factor(cars$cambio)
 # Cambio.
 
 table(cars$veicolo_non_fumatori)
 cars$veicolo_non_fumatori[is.na(cars$veicolo_non_fumatori)] = "Non dichiarato"
 cars$veicolo_non_fumatori[cars$veicolo_non_fumatori == "Sì"] = "Si"
+cars$veicolo_non_fumatori = factor(cars$veicolo_non_fumatori)
 # Veicolo non fumatori.
 
 table(cars$usato_garantito)
@@ -572,6 +584,7 @@ cars = cars %>%
                            "74 mesi", "84 mesi") ~ 'Oltre 36 mesi'
   ))
 cars$usato_garantito[is.na(cars$usato_garantito)] = "No"
+cars$usato_garantito = factor(cars$usato_garantito)
 # Per convenzione si assume che la categoria "sì" vada a finire
 # nei 12 mesi.
 
@@ -586,6 +599,7 @@ cars = cars %>%
   ))
 names(cars)[names(cars) == 'colore_finiture_interne'] <- 'finiture'
 cars$finiture[is.na(cars$finiture)] = "Non specificato"
+cars$finiture = factor(cars$finiture)
 # Finiture interne.
 
 table(cars$carburante)
@@ -607,6 +621,7 @@ cars = cars %>%
 # nocarb <- cars %>% filter(is.na(carburante))
 # View(nocarb)
 cars$carburante[is.na(cars$carburante)] = "Benzina"
+cars$carburante = factor(cars$carburante)
 # Carburante. Le auto elettriche presenti lo sono al 100% (non ibride).
 # Si verifica che tutte le auto con carburante mancante sono ibride.
 # Pertanto si imputa a "Benzina" il valore mancante (l'informazione
@@ -623,6 +638,7 @@ cars = cars %>%
     colore %in% c("Grigio") ~ 'Grigia',
   ))
 cars$colore[is.na(cars$colore)] = "Non specificato"
+cars$colore = factor(cars$colore)
 # Colore della macchina.
 
 table(cars$tipo_di_vernice)
@@ -630,6 +646,7 @@ cars$tipo_di_vernice[cars$tipo_di_vernice == "Altro"] = "No"
 cars$tipo_di_vernice[cars$tipo_di_vernice == "Metallizzato"] = "Si"
 cars$tipo_di_vernice[is.na(cars$tipo_di_vernice)] = "No"
 names(cars)[names(cars) == 'tipo_di_vernice'] <- 'metallizzata'
+cars$metallizzata = factor(cars$metallizzata)
 # Tipo di vernice.
 
 table(cars$materiale)
@@ -641,6 +658,7 @@ cars = cars %>%
     materiale %in% c("Stoffa") ~ 'Stoffa'
   ))
 cars$materiale[is.na(cars$materiale)] = "Altro"
+cars$materiale = factor(cars$materiale)
 # Materiale rivestimenti.
 
 cars$emissioni_co_2_8 <- substr(cars$emissioni_co_2_8, 
@@ -682,6 +700,7 @@ cars <- cars %>%
     is.na(classe_emissioni) & anno_prod %in% c("2019", "2020", "2021", "2022", "2023", "2024") ~ 'Euro 6 Plus',
     TRUE ~ classe_emissioni
   ))
+cars$classe_emissioni = factor(cars$classe_emissioni)
 # La classe di emissioni è un dato che si può imputare a partire
 # dalla data di costruzione della macchina.
 
@@ -713,6 +732,7 @@ optional <- unlist(strsplit(as.character(cars$optional), "\\*"))
 # che corrispondono a frasi e non ad optional.
 
 top.optional <- names(sort(table(optional), decreasing = T)[14:58])
+top.optional
 # Questi sono gli optional più diffusi (tolti i più banali).
 
 cars$autoradio = NA
@@ -778,8 +798,20 @@ cars$optional = NULL
 # Adesso vi sono delle variabili indicatrici che indicano se ogni macchina
 # ha o no un certo optional.
 
-
-# --------
-
 library(DataExplorer)
-plot_missing(cars)
+plot_missing(cars[,1:35])
+# Vi sono alcuni valori mancanti ma niente di preoccupante.
+
+str(cars)
+cars$marca = factor(cars$marca)
+cars$modello = factor(cars$modello)
+cars$trazione = factor(cars$trazione)
+# Il dataset è pronto.
+
+cars2 <- cars %>% 
+  distinct(marca, modello, regione, prezzo_auto,
+           chilometraggio, anno_prod, .keep_all = T)
+# Alcune macchine erano ragionevolmente dei "doppioni".
+
+dati = read.csv(file.choose(), stringsAsFactors = T)
+# File "cars-clean.csv".
