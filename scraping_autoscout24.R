@@ -839,4 +839,4 @@ cars <- cars %>%
 # Nuova variabile "marce" senza incongruenze.
 
 # cars = read.csv(file.choose(), stringsAsFactors = T)
-# File "cars-clean.csv".
+# File "cars-clean-v2.csv".
