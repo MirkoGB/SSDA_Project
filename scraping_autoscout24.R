@@ -215,19 +215,6 @@ for (i in dim(temp_dataframe)[1]:length(all_links)) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 # ------ PREZZO SECONDO AUTOSCOUT24 ------ 
 
 # La prima Panda       -> "Superprezzo".
@@ -450,6 +437,22 @@ names(cars)[names(cars) == 'paese'] <- 'regione'
 # Ora il dataframe contiene la regione e non il paese del rivenditore
 # o della concessionaria.
 
+table(cars$regione)
+cars$zona_geografica = NA
+cars = cars %>% 
+  mutate(zona_geografica = case_when(
+    regione %in% c("Valle d'Aosta", "Piemonte", "Liguria",
+                   "Lombardia") ~ 'Nord Ovest',
+    regione %in% c("Veneto", "Trentino-AA", "Friuli-VG") ~ 'Nord Est',
+    regione %in% c("Emilia-Romagna", "Toscana", "Umbria",
+                   "Marche", "Lazio", "Abruzzo") ~ 'Centro',
+    regione %in% c("Campania", "Basilicata", "Calabria",
+                   "Sicilia", "Puglia") ~ 'Sud',
+  ))
+cars <- cars %>%
+  dplyr::relocate(zona_geografica, .after = regione)
+# Zona geografica.
+
 
 # 6) Neopatentati e potenza ------
 
@@ -468,9 +471,8 @@ cars <- cars %>%
 cars$potenza = NULL
 # Non serve più.
 
-# Il limite per i neopatentati è 55 kW.
-
 cars$per_neopatentati = ifelse(cars$kW <= 55, "Si", "No")
+# Il limite per i neopatentati è 55 kW.
 # In questo modo la variabile risulta essere definita
 # con certezza sulla base dei kW e si imputano molti NA.
 
@@ -480,7 +482,21 @@ cars$per_neopatentati = ifelse(cars$kW <= 55, "Si", "No")
 peso <- substr(cars$peso_a_vuoto, start = 1,
                stop = nchar(cars$peso_a_vuoto) - 3)
 cars$peso_a_vuoto = peso
+cars$peso_a_vuoto <- gsub("\\.", "", cars$peso_a_vuoto)
 # Pulizia del peso a vuoto.
+
+mediane_per_modello <- cars %>%
+  group_by(modello) %>%
+  summarise(mediana_peso = median(as.numeric(peso_a_vuoto), na.rm = TRUE))
+cars <- left_join(cars, mediane_per_modello, by = "modello")
+# Si aggiunge al dataframe una nuova colonna con le mediane dei
+# pesi dei modelli.
+
+cars <- cars %>%
+  mutate(peso = ifelse(is.na(peso_a_vuoto), mediana_peso, peso_a_vuoto))
+cars$peso_a_vuoto = NULL
+# I dati mancanti del peso sono stati imputati con la mediana
+# fatta per modello (sembra ragionevole).
 
 table(cars$carrozzeria, cars$modello)
 # Ad alcuni modelli sono state assegnate più tipologie
@@ -630,21 +646,20 @@ cars$materiale[is.na(cars$materiale)] = "Altro"
 cars$emissioni_co_2_8 <- substr(cars$emissioni_co_2_8, 
                                 start = 1,
                                 stop = nchar(cars$emissioni_co_2_8) - 12)
+cars$emissioni_co_2_8 = as.numeric(cars$emissioni_co_2_8)
+cars$emissioni_co_2_8[cars$emissioni_co_2_8 < 2] = NA
+cars$emissioni_co_2_8[cars$emissioni_co_2_8 > 250] = NA
 cars$emissioni_co_wltp_2_8 <- substr(cars$emissioni_co_wltp_2_8 , 
                                      start = 1,
                                      stop = nchar(cars$emissioni_co_wltp_2_8 ) - 12)
 cars$emissioni_co_2 <- NULL
-cars$emissioni_co_2_8[163] = 96
-cars$emissioni_co_2_8[164] = 99
+cars$emissioni_co_wltp_2_8 = as.numeric(cars$emissioni_co_wltp_2_8)
 cars <- cars %>% 
   mutate(emissioni = coalesce(emissioni_co_2_8, emissioni_co_wltp_2_8))
-cars$emissioni_co_2_8 = cars$emissioni_co_wltp_2_8 = NULL
-cars$emissioni[728] = 139
-cars$emissioni <- gsub(",", ".", cars$emissioni)
-cars$emissioni <- gsub(" ", "", cars$emissioni)
-cars$emissioni = as.numeric(cars$emissioni)
-# Si crea una nuova variabile "emissioni" che unisce i due contributi
-# delle variabili emissioni_co_2_8 ed emissioni_co_wltp_2_8. 
+summary(cars$emissioni)
+cars$emissioni_co_wltp_2_8 = cars$emissioni_co_2_8 = NULL
+# Nuova variabile relativa alle emissioni che unisce i due contributi
+# delle variabili emissioni_co_2_8 ed emissioni_co_wltp_2_8.
 
 cars$proprietari = NULL
 # Troppi NA e impossibile imputare.
@@ -658,6 +673,17 @@ cars = cars %>%
     classe_emissioni %in% c("Euro 6d", "Euro 6d-TEMP", "Euro 6e") ~ 'Euro 6 Plus',
   ))
 # Classe di emissioni.
+
+cars <- cars %>% 
+  mutate(classe_emissioni = case_when(
+    is.na(classe_emissioni) & anno_prod %in% c("1990", "1998", "2008", "2009") ~ 'Euro 4 o meno',
+    is.na(classe_emissioni) & anno_prod %in% c("2010", "2011", "2012", "2013", "2014") ~ 'Euro 5',
+    is.na(classe_emissioni) & anno_prod %in% c("2015", "2016", "2017", "2018", "2018") ~ 'Euro 6',
+    is.na(classe_emissioni) & anno_prod %in% c("2019", "2020", "2021", "2022", "2023", "2024") ~ 'Euro 6 Plus',
+    TRUE ~ classe_emissioni
+  ))
+# La classe di emissioni è un dato che si può imputare a partire
+# dalla data di costruzione della macchina.
 
 cars$consumo_di_carburante2_8 <- substr(cars$consumo_di_carburante2_8,
                                         start = 1, stop = 3)
@@ -674,6 +700,8 @@ cars$consumo_di_carburante_wltp_2_8 <- gsub(",", ".",
 cars <- cars %>% 
   mutate(consumi = coalesce(consumo_di_carburante2_8,
                             consumo_di_carburante_wltp_2_8))
+cars$consumi = as.numeric(cars$consumi)
+cars$consumi[cars$consumi == 0] = NA
 cars$consumo_di_carburante2_8 = cars$consumo_di_carburante_wltp_2_8 = NULL
 # Costruzione di una nuova variabile relativa ai consumi.
 
@@ -749,3 +777,9 @@ for (i in 1:NROW(cars)) {
 cars$optional = NULL
 # Adesso vi sono delle variabili indicatrici che indicano se ogni macchina
 # ha o no un certo optional.
+
+
+# --------
+
+library(DataExplorer)
+plot_missing(cars)
