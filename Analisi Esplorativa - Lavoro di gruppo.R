@@ -182,7 +182,7 @@ minmax_df %>%
              xmin = min_ci,xmax = max_ci)) +
   geom_linerange(col = "#F5F200",size = 1.5) +
   geom_pointrange(size = 0.6,col = "#333333") +
-  xlab("Prezzo medio") +
+  xlab("Prezzo medio auto") +
   ylab("Modello") +
   theme_minimal() +
   theme(text = element_text(family = "CMUSerif",colour = "black"),
@@ -213,7 +213,7 @@ marche_df %>%
              xmin = Minimo,xmax = Massimo)) +
   geom_linerange(col = "#F5F200",size = 1.5) +
   geom_pointrange(size = 0.6,col = "#333333") +
-  xlab("Prezzo medio") +
+  xlab("Prezzo medio auto") +
   ylab("Marca") +
   theme_minimal() +
   theme(text = element_text(family = "CMUSerif",colour = "black"),
